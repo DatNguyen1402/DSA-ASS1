@@ -312,13 +312,39 @@ DLinkedList<T>::DLinkedList(
     void (*deleteUserData)(DLinkedList<T> *),
     bool (*itemEqual)(T &, T &))
 {
-    // TODO
+    // TODO 
+    head = new Node();
+    tail = new Node();
+
+    head->next = tail;
+    tail ->prev = head;
+
+    count = 0;
+
+    this->deleteUserData = deleteUserData;
+    this->itemEqual = itemEqual;
 }
 
 template <class T>
 DLinkedList<T>::DLinkedList(const DLinkedList<T> &list)
 {
-    // TODO
+    // TODO 
+    this->deleteUserData = list.deleteUserData;
+    this->itemEqual = list.itemEqual;
+
+    head = new Node();
+    tail = new Node();
+
+    head->next = tail;
+    tail ->prev = head;
+
+    count = 0;
+
+    Node* current = list.head->next; 
+    while(current != list.tail) {     
+        add(current->data);           
+        current = current->next;
+    }
 }
 
 template <class T>
