@@ -2,19 +2,19 @@
 #include <iomanip>
 #include <sstream>
 #include <string>
-// #include "test/tc_dlinkedlist.h"  
+#include "test/tc_dlinkedlist.h"  
 #include "test/tc_xarraylist.h"
 // #include "test/tc_inventory.h"
 
 using namespace std;
 
-void (*func_ptr[4])() = {
-    // dlistDemo1,
-    // dlistDemo2,
-    // dlistDemo3,
-    // dlistDemo4,
-    // dlistDemo5,
-    // dlistDemo6,
+void (*func_ptr[10])() = {
+    dlistDemo1,
+    dlistDemo2,
+    dlistDemo3,
+    dlistDemo4,
+    dlistDemo5,
+    dlistDemo6,
     xlistDemo1,
     xlistDemo2,
     xlistDemo3,
@@ -47,7 +47,7 @@ int main(int argc, char **argv)
         xlistDemo1(); // mặc định chạy demo 1
     } else {
         int idx = stoi(argv[1]);
-        if (idx >= 0 && idx < 4) {
+        if (idx >= 0 && idx < 15) {
             run(idx);
         } else {
             cout << "Invalid test index. Must be 0 to 3." << endl;

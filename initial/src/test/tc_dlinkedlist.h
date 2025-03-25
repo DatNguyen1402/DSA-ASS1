@@ -10,9 +10,10 @@ void dlistDemo1(){
     for(int i = 0; i< 20 ; i++)
         dlist.add(i, i*i);
     dlist.println();
-    
+
     for(List<int>::Iterator it=dlist.begin(); it != dlist.end(); it++ )
         cout << *it << " ";
+    
     cout << endl;
 }
 void dlistDemo2(){
