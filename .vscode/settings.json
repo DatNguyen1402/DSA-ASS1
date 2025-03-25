@@ -58,6 +58,8 @@
     "common.h": "c",
     "pthread.h": "c",
     "iostream": "cpp",
-    "iosfwd": "cpp"
+    "iosfwd": "cpp",
+    "new": "cpp",
+    "iomanip": "cpp"
   }
 }

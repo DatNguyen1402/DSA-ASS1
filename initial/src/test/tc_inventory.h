@@ -4,9 +4,10 @@
 using namespace std;
 
 void tc_inventory1001() {
+    cout << "ok";
     int arr[] = {1, 2, 3, 4, 5};
     List1D<int> list1D(arr, 5);
-    
+    cout << "ok";
     cout << list1D.toString() << endl;
 }
 
