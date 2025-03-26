@@ -39,6 +39,9 @@ public:
         pList->removeAt(index);
     }
     string toString() const;
+    void clear(){
+        pList->clear();
+    }
 
     friend ostream &operator<< <T>(ostream &os, const List1D<T> &list);
 };
@@ -69,6 +72,13 @@ public:
     
     List1D<T> getRow(int rowIndex) const;
     string toString() const;
+
+    void clear(){
+        for (int i = 0; i< rows(); i++){
+            pMatrix->get(i)->clear();
+        }
+        pMatrix->clear();
+    }
     
     friend ostream &operator<< <T>(ostream &os, const List2D<T> &matrix);
 };
@@ -80,6 +90,7 @@ struct InventoryAttribute
     InventoryAttribute(const string &name, double value) : name(name), value(value) {}
     string toString() const { return name + ": " + to_string(value); }
     InventoryAttribute() : name(""), value(0.0) {}
+    double getValue() const {return value;}
     bool operator==(const InventoryAttribute &other) const {
         return name == other.name && value == other.value;
     }
@@ -98,7 +109,8 @@ private:
     List1D<string> productNames;
     List1D<int> quantities;
 
-public:
+    void Attrsort(List1D<int>& list, bool ascending ) const;
+    public:
     InventoryManager();
     InventoryManager(const List2D<InventoryAttribute> &matrix,
                      const List1D<string> &names,
@@ -129,6 +141,15 @@ public:
     List1D<string> getProductNames() const;
     List1D<int> getQuantities() const;
     string toString() const;
+
+    // helper function
+
+    double getAttrValue(string name, const List1D<InventoryAttribute> row) const;
+
+    
+    void sort(List1D<int>& list, string name ,bool ascending) const;
+    bool isSameAttribute(const List1D<InventoryAttribute>& row1, const List1D<InventoryAttribute>& row2) const;
+
 };
 
 // -------------------- List1D Method Definitions --------------------
@@ -177,7 +198,7 @@ template <typename T>
 List1D<T>::~List1D()
 {
     // TODO
-    delete pList;
+    // delete pList;
 }
 
 template <typename T>
@@ -258,10 +279,10 @@ template <typename T>
 List2D<T>::~List2D()
 {
     // TODO
-    for (int i = 0; i < pMatrix->size(); ++i) {
-        delete pMatrix->get(i);  
-    }
-    delete pMatrix;  
+    // for (int i = 0; i < pMatrix->size(); i++) {
+    //     delete pMatrix->get(i);  
+    // }
+    // delete pMatrix;  
 }
 
 template <typename T>
@@ -286,6 +307,7 @@ T List2D<T>::get(int rowIndex, int colIndex) const
     // TODO
     return pMatrix->get(rowIndex)->get(colIndex);
 }
+
 
 template <typename T>
 void List2D<T>::addRow(const List1D<T>& row)
@@ -359,11 +381,12 @@ InventoryManager::InventoryManager(const InventoryManager &other)
 int InventoryManager::size() const
 {
     // TODO
-    int sum = 0;
-    for (int i = 0; i < quantities.size(); i++){
-        sum += quantities.get(i);
-    }
-    return sum;
+    // int sum = 0;
+    // for (int i = 0; i < quantities.size(); i++){
+    //     sum += quantities.get(i);
+    // }
+    // return sum;
+    return productNames.size();
 }
 
 List1D<InventoryAttribute> InventoryManager::getProductAttributes(int index) const
@@ -416,16 +439,17 @@ List1D<string> InventoryManager::query(string attributeName, const double &minVa
     for (int i = 0; i < productNames.size(); i++){
         if (quantities.get(i) < minQuantity) continue;
         List1D<InventoryAttribute> row = attributesMatrix.getRow(i);
-        for (int j = 0; j < row.size(); i++){
-            InventoryAttribute attributeEle = row.get(i);
-            if (attributeEle.name == attributeName && attributeEle.value >= minValue && attributeEle.value <= maxValue){
-                result.add(j);  //add index to result
+        for (int j = 0; j < row.size(); j++){
+            double value = getAttrValue(attributeName, row);
+            if (value == -1) continue;
+            if (value >= minValue && value <= maxValue){
+                result.add(i);  //add index to result
                 break; 
             }
         }
     }
     //sort
-
+    sort(result, attributeName, ascending);
 
     // result
     List1D<string> resultName = List1D<string>();
@@ -433,21 +457,78 @@ List1D<string> InventoryManager::query(string attributeName, const double &minVa
     for (int i = 0; i < result.size(); i++){
         resultName.add(productNames.get(result.get(i)));
     }
-
+    
     return resultName;
 }
+
+
+
+void InventoryManager::sort(List1D<int>& list, string name ,bool ascending) const {
+    int n = list.size();
+    for (int i = 0; i < n - 1; i++) {
+        for (int j = 0; j < n - i - 1; j++) {
+            int leftVal = getAttrValue(name, attributesMatrix.getRow(list.get(j)));
+            int rightVal = getAttrValue(name, attributesMatrix.getRow(list.get(j+1)));
+            
+            if ((ascending && leftVal > rightVal) || (!ascending && leftVal < rightVal)) {
+                int temp = list.get(i);
+                list.set(i, list.get(j));
+                list.set(j, temp);
+            }
+            else if ((ascending && getProductQuantity(j) > getProductQuantity(j+1)) || (!ascending && getProductQuantity(j) < getProductQuantity(j+1)))
+                {
+                    int temp = list.get(i);
+                    list.set(i, list.get(j));
+                    list.set(j, temp);
+                }
+        }
+    }
+}
+
+
+double InventoryManager::getAttrValue(string name, const List1D<InventoryAttribute> row) const{
+    for (int i = 0; i < row.size(); i++){
+        InventoryAttribute attributeEle = row.get(i);
+        if (attributeEle.name == name) return attributeEle.value;
+    }
+    return -1;
+}
+
 
 void InventoryManager::removeDuplicates()
 {
     // TODO
-    return;
+
+    for (int i = 0; i < productNames.size(); i++) {
+        for (int j = i + 1; j < productNames.size(); ) {
+            if (productNames.get(i) == productNames.get(j) && isSameAttribute(attributesMatrix.getRow(i), attributesMatrix.getRow(j))) {
+                quantities.set(i, quantities.get(i) + quantities.get(j));
+
+                productNames.removeAt(j);
+                quantities.removeAt(j);
+                attributesMatrix.removeAt(j);  
+
+            } else {
+                j++;
+            }
+        }
+    }
 }
 
 InventoryManager InventoryManager::merge(const InventoryManager &inv1,
                                          const InventoryManager &inv2)
 {
     // TODO
-    return inv1;
+
+    InventoryManager newInven(inv1);
+
+    for (int i = 0; i < inv2.getProductNames().size(); i++) {
+        newInven.addProduct(inv2.getProductAttributes(i),inv2.getProductName(i),inv2.getProductQuantity(i));    
+    }
+    
+    newInven.removeDuplicates();
+
+    return newInven;
 }
 
 void InventoryManager::split(InventoryManager &section1,
@@ -455,7 +536,32 @@ void InventoryManager::split(InventoryManager &section1,
                              double ratio) const
 {
     // TODO
-    return;
+    section1.productNames.clear();
+    section1.quantities.clear();
+    section1.attributesMatrix.clear();
+
+    section2.productNames.clear();
+    section2.quantities.clear();
+    section2.attributesMatrix.clear();
+
+    for (int i = 0; i < productNames.size(); i++) {
+        string name = productNames.get(i);
+        int quantity = quantities.get(i);
+        List1D<InventoryAttribute> attributes = attributesMatrix.getRow(i);
+
+        double raw = quantity * ratio;
+        int q1 = (raw == (int)raw) ? (int)raw : (int)raw + 1;
+        int q2 = quantity - q1;
+
+
+        section1.productNames.add(name);
+        section1.quantities.add(q1);
+        section1.attributesMatrix.addRow(attributes); 
+
+        section2.productNames.add(name);
+        section2.quantities.add(q2);
+        section2.attributesMatrix.addRow(attributes);
+    }
 }
 
 List2D<InventoryAttribute> InventoryManager::getAttributesMatrix() const
@@ -476,18 +582,30 @@ List1D<int> InventoryManager::getQuantities() const
     return quantities;
 }
 
+bool InventoryManager::isSameAttribute(const List1D<InventoryAttribute>& row1, const List1D<InventoryAttribute>& row2) const {
+    if (row1.size() != row2.size()) return false;
+    for (int i = 0; i < row1.size(); i++) {
+        InventoryAttribute a = row1.get(i);
+        InventoryAttribute b = row2.get(i);
+        if (!(a==b)) {
+            return false;
+        }
+    }
+    return true;
+}
+
 string InventoryManager::toString() const
 {
     // TODO
     stringstream ss;
     ss << "InventoryManager[\n";
-    ss << "AttributesMatrix: " ;
+    ss << "  AttributesMatrix: " ;
     ss << attributesMatrix.toString() ;
-    ss << "\n";
-    ss << "ProductNames: ";
+    ss << ",\n";
+    ss << "  ProductNames: ";
     ss << productNames.toString();
-    ss << "\n";
-    ss << "Quantities: ";
+    ss << ",\n";
+    ss << "  Quantities: ";
     ss << quantities.toString();
     ss << "\n";
     ss << "]";

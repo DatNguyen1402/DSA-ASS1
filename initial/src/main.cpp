@@ -47,7 +47,7 @@ int main(int argc, char **argv)
         tc_inventory1001(); // mặc định chạy demo 1
     } else {
         int idx = stoi(argv[1]);
-        if (idx >= 0 && idx < 15) {
+        if (idx >= 0 && idx <= 15) {
             run(idx);
         } else {
             cout << "Invalid test index. Must be 0 to 15." << endl;

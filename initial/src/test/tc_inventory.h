@@ -54,6 +54,7 @@ void tc_inventory1003() {
     InventoryManager inventory(attributesMatrix, productNames, quantities);
     
     cout << inventory.toString() << endl;
+    cout << "12 ok?" << endl;
 }
 
 void tc_inventory1004(){

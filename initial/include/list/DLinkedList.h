@@ -379,7 +379,6 @@ DLinkedList<T>::~DLinkedList()
     // Clear the list (removes all nodes)
     clear();
 
-    // Delete the sentinel nodes (head and tail)
     delete head;
     delete tail;
 }
@@ -502,8 +501,10 @@ int DLinkedList<T>::indexOf(T item)
     Node *cur = head->next;
     int index = 0;
     while(cur != tail){
-        if (cur->data == item){
-            return index; 
+        if (itemEqual) {
+            if (itemEqual(cur->data, item)) return index;
+        } else {
+            if (cur->data == item) return index;
         }
         cur = cur->next;
         index++;
