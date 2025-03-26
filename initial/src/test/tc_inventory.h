@@ -95,6 +95,15 @@ void tc_inventory1004(){
     inventory.addProduct(listAttrD, "Product D", 40);
     cout << "\nAfter adding Product D:" << endl;
     cout << inventory.toString() << endl;
+
+
+
+    InventoryManager inven1 =  InventoryManager();
+    InventoryManager inven2= InventoryManager();
+    inventory.split(inven1, inven2, 0.2);
+
+    cout << inven1.toString() << endl;
+    cout << inven2.toString() << endl;
 }
 
 void tc_inventory1005(){
@@ -127,7 +136,7 @@ void tc_inventory1005(){
 
     InventoryManager inventory(attributesMatrix, productNames, quantities);
 
-    List1D<string> queryResult = inventory.query("weight", 10, 20, 30, true);
+    List1D<string> queryResult = inventory.query("weight", 10, 20, 30, false);
     cout << "\nQuery result (weight between 10 and 20, quantity >= 30):" << endl;
     cout << queryResult << endl;
 }

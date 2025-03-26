@@ -109,7 +109,7 @@ private:
     List1D<string> productNames;
     List1D<int> quantities;
 
-    void Attrsort(List1D<int>& list, bool ascending ) const;
+
     public:
     InventoryManager();
     InventoryManager(const List2D<InventoryAttribute> &matrix,
@@ -141,7 +141,7 @@ private:
     List1D<string> getProductNames() const;
     List1D<int> getQuantities() const;
     string toString() const;
-
+    
     // helper function
 
     double getAttrValue(string name, const List1D<InventoryAttribute> row) const;
@@ -469,17 +469,20 @@ void InventoryManager::sort(List1D<int>& list, string name ,bool ascending) cons
         for (int j = 0; j < n - i - 1; j++) {
             int leftVal = getAttrValue(name, attributesMatrix.getRow(list.get(j)));
             int rightVal = getAttrValue(name, attributesMatrix.getRow(list.get(j+1)));
-            
+            //test
+            // cout << leftVal << " " << rightVal << "- sort?" << endl;
+
             if ((ascending && leftVal > rightVal) || (!ascending && leftVal < rightVal)) {
-                int temp = list.get(i);
-                list.set(i, list.get(j));
-                list.set(j, temp);
+                int temp = list.get(j);
+                list.set(j, list.get(j+1));
+                list.set(j+1, temp);
+                // cout << list.toString();
             }
-            else if ((ascending && getProductQuantity(j) > getProductQuantity(j+1)) || (!ascending && getProductQuantity(j) < getProductQuantity(j+1)))
+            else if ((ascending && getProductQuantity(j) > getProductQuantity(j+1) && leftVal == rightVal) || (!ascending && getProductQuantity(j) < getProductQuantity(j+1) && leftVal == rightVal))
                 {
-                    int temp = list.get(i);
-                    list.set(i, list.get(j));
-                    list.set(j, temp);
+                    int temp = list.get(j);
+                    list.set(j, list.get(j+1));
+                    list.set(j+1, temp);
                 }
         }
     }
@@ -536,31 +539,25 @@ void InventoryManager::split(InventoryManager &section1,
                              double ratio) const
 {
     // TODO
-    section1.productNames.clear();
-    section1.quantities.clear();
-    section1.attributesMatrix.clear();
+    double raw = size() * ratio;
+    int splitIndex = (raw == (int)raw) ? (int)raw : (int)raw + 1;
 
-    section2.productNames.clear();
-    section2.quantities.clear();
-    section2.attributesMatrix.clear();
 
-    for (int i = 0; i < productNames.size(); i++) {
+    for (int i = 0; i < size(); i++) {
         string name = productNames.get(i);
         int quantity = quantities.get(i);
         List1D<InventoryAttribute> attributes = attributesMatrix.getRow(i);
 
-        double raw = quantity * ratio;
-        int q1 = (raw == (int)raw) ? (int)raw : (int)raw + 1;
-        int q2 = quantity - q1;
-
-
-        section1.productNames.add(name);
-        section1.quantities.add(q1);
-        section1.attributesMatrix.addRow(attributes); 
-
-        section2.productNames.add(name);
-        section2.quantities.add(q2);
-        section2.attributesMatrix.addRow(attributes);
+        if (i < splitIndex){
+            section1.productNames.add(name);
+            section1.attributesMatrix.addRow(attributes); 
+            section1.quantities.add(quantity);
+        }
+        else{
+            section2.productNames.add(name);
+            section2.attributesMatrix.addRow(attributes);
+            section2.quantities.add(quantity);
+        }
     }
 }
 
