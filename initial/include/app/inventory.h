@@ -363,6 +363,7 @@ ostream &operator<<(ostream &os, const List2D<T> &matrix)
 InventoryManager::InventoryManager()
 {
     // TODO
+    
 }
 
 InventoryManager::InventoryManager(const List2D<InventoryAttribute> &matrix,
@@ -486,11 +487,14 @@ void InventoryManager::sort(List1D<int>& list, string name ,bool ascending) cons
             if (isEqualVal){
                 int quantity1 = getProductQuantity(index1);
                 int quantity2 = getProductQuantity(index2);
-                isSwap = (ascending && quantity1 >  quantity2 )|| (!ascending && quantity1 < quantity2  );
+                isSwap = (ascending && quantity1 >  quantity2 )|| (!ascending && quantity1 < quantity2) || (!ascending && quantity1 == quantity2);
             }
             else {
                 isSwap = (ascending && leftVal > rightVal) || (!ascending && leftVal < rightVal);
             }
+
+
+
             if (isSwap){
                 list.set(j, index2);
                 list.set(j+1, index1);      
@@ -540,7 +544,7 @@ InventoryManager InventoryManager::merge(const InventoryManager &inv1,
         newInven.addProduct(inv2.getProductAttributes(i),inv2.getProductName(i),inv2.getProductQuantity(i));    
     }
     
-    newInven.removeDuplicates();
+    // newInven.removeDuplicates();
 
     return newInven;
 }
