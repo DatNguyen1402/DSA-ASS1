@@ -8,11 +8,11 @@ End of tc_inventory1002
 
 Running tc_inventory1003:
 InventoryManager[
-  AttributesMatrix: [[weight: 10.000000, height: 156.000000], [weight: 20.000000, depth: 24.000000, height: 100.000000], [color: 2.000000]],
-  ProductNames: [Product A, Product B, Product C],
-  Quantities: [50, 30, 20]
+  AttributesMatrix: [[weight: 10.000000, height: 156.000000], [weight: 20.000000, depth: 24.000000, height: 100.000000], [color: 2.000000], [weight: 22.000000, depth: 24.000000, height: 100.000000], [weight: 22.000000, depth: 24.000000, height: 100.000000]],
+  ProductNames: [Product A, Product B, Product C, Product D, Product E],
+  Quantities: [50, 30, 20, 10, 15]
 ]
-End of tc_inventory1003
+[Product A, Product B, Product D, Product E]End of tc_inventory1003
 
 Running tc_inventory1004:
 

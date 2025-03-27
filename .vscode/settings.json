@@ -78,6 +78,7 @@
     "ostream": "cpp",
     "sstream": "cpp",
     "streambuf": "cpp",
-    "type_traits": "cpp"
+    "type_traits": "cpp",
+    "stdexcept": "cpp"
   }
 }

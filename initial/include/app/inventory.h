@@ -55,15 +55,15 @@ ostream &operator<<(ostream &os, const List2D<T> &list);
 template <typename T>
 class List2D
 {
-private:
+    private:
     IList<List1D<T> *> *pMatrix;
-
-public:
+    
+    public:
     List2D();
     List2D(List1D<T> *array, int num_rows);
     List2D(const List2D<T> &other);
     virtual ~List2D();
-
+    
     int rows() const;
     void setRow(int rowIndex, const List1D<T> &row);
     T get(int rowIndex, int colIndex) const;
@@ -72,7 +72,7 @@ public:
     
     List1D<T> getRow(int rowIndex) const;
     string toString() const;
-
+    
     void clear(){
         for (int i = 0; i< rows(); i++){
             pMatrix->get(i)->clear();
@@ -83,6 +83,10 @@ public:
     friend ostream &operator<< <T>(ostream &os, const List2D<T> &matrix);
 };
 
+bool compareDouble(double a, double b){
+    double diff = (a-b < 0) ? b-a : a-b;
+    return diff < 1e-8;
+}
 struct InventoryAttribute
 {
     string name;
@@ -92,7 +96,7 @@ struct InventoryAttribute
     InventoryAttribute() : name(""), value(0.0) {}
     double getValue() const {return value;}
     bool operator==(const InventoryAttribute &other) const {
-        return name == other.name && value == other.value;
+        return name == other.name && compareDouble(value, other.value);
     }
     
     friend ostream& operator<<(ostream& os, const InventoryAttribute& attr) {
@@ -100,6 +104,7 @@ struct InventoryAttribute
     }
     
 };
+
 
 // -------------------- InventoryManager --------------------
 class InventoryManager
@@ -467,23 +472,29 @@ void InventoryManager::sort(List1D<int>& list, string name ,bool ascending) cons
     int n = list.size();
     for (int i = 0; i < n - 1; i++) {
         for (int j = 0; j < n - i - 1; j++) {
-            int leftVal = getAttrValue(name, attributesMatrix.getRow(list.get(j)));
-            int rightVal = getAttrValue(name, attributesMatrix.getRow(list.get(j+1)));
+            double leftVal = getAttrValue(name, attributesMatrix.getRow(list.get(j)));
+            double rightVal = getAttrValue(name, attributesMatrix.getRow(list.get(j+1)));
             //test
             // cout << leftVal << " " << rightVal << "- sort?" << endl;
 
-            if ((ascending && leftVal > rightVal) || (!ascending && leftVal < rightVal)) {
-                int temp = list.get(j);
-                list.set(j, list.get(j+1));
-                list.set(j+1, temp);
-                // cout << list.toString();
+            bool isEqualVal = compareDouble(leftVal, rightVal);
+            bool isSwap = false;
+
+            int index1 = list.get(j);
+            int index2 = list.get(j+1);
+
+            if (isEqualVal){
+                int quantity1 = getProductQuantity(index1);
+                int quantity2 = getProductQuantity(index2);
+                isSwap = (ascending && quantity1 >  quantity2 )|| (!ascending && quantity1 < quantity2  );
             }
-            else if ((ascending && getProductQuantity(j) > getProductQuantity(j+1) && leftVal == rightVal) || (!ascending && getProductQuantity(j) < getProductQuantity(j+1) && leftVal == rightVal))
-                {
-                    int temp = list.get(j);
-                    list.set(j, list.get(j+1));
-                    list.set(j+1, temp);
-                }
+            else {
+                isSwap = (ascending && leftVal > rightVal) || (!ascending && leftVal < rightVal);
+            }
+            if (isSwap){
+                list.set(j, index2);
+                list.set(j+1, index1);      
+            }
         }
     }
 }

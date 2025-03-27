@@ -78,21 +78,37 @@ REGISTER_TESTCASE(tc_inventory1003) {
     int numAttrB = sizeof(arrB) / sizeof(arrB[0]);
     List1D<InventoryAttribute> listAttrB(arrB, numAttrB);
 
+    InventoryAttribute attrD1("weight", 22);
+    InventoryAttribute attrD2("depth", 24);
+    InventoryAttribute attrD3("height", 100);
+    InventoryAttribute arrD[] = { attrD1, attrD2, attrD3 };
+    int numAttrD = sizeof(arrD) / sizeof(arrD[0]);
+    List1D<InventoryAttribute> listAttrD(arrD, numAttrD);
+
+    InventoryAttribute attrE1("weight", 22);
+    InventoryAttribute attrE2("depth", 24);
+    InventoryAttribute attrE3("height", 100);
+    InventoryAttribute arrE[] = { attrE1, attrE2, attrE3 };
+    int numAttrE = sizeof(arrE) / sizeof(arrD[0]);
+    List1D<InventoryAttribute> listAttrE(arrE, numAttrE);
+
     InventoryAttribute attrC1("color", 2);
     InventoryAttribute arrC[] = { attrC1 };
     int numAttrC = sizeof(arrC) / sizeof(arrC[0]);
     List1D<InventoryAttribute> listAttrC(arrC, numAttrC);
 
-    List1D<InventoryAttribute> attributesArray[3] = { listAttrA, listAttrB, listAttrC };
-    List2D<InventoryAttribute> attributesMatrix(attributesArray, 3);
+    List1D<InventoryAttribute> attributesArray[5] = { listAttrA, listAttrB, listAttrC, listAttrD, listAttrE };
+    List2D<InventoryAttribute> attributesMatrix(attributesArray, 5);
 
-    string namesArray[] = { "Product A", "Product B", "Product C" };
-    List1D<string> productNames(namesArray, 3);
-    int quantitiesArray[] = { 50, 30, 20 };
-    List1D<int> quantities(quantitiesArray, 3);
+    string namesArray[] = { "Product A", "Product B", "Product C", "Product D", "Product E" };
+    List1D<string> productNames(namesArray, 5);
+    int quantitiesArray[] = { 50, 30, 20, 10, 15 };
+    List1D<int> quantities(quantitiesArray, 5);
 
     InventoryManager inventory(attributesMatrix, productNames, quantities);
     os << inventory.toString() << endl;
+
+    os << inventory.query("weight", 10, 30, 10, true);
 }
 
 REGISTER_TESTCASE(tc_inventory1004) {
