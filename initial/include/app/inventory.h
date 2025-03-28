@@ -39,9 +39,6 @@ public:
         pList->removeAt(index);
     }
     string toString() const;
-    void clear(){
-        pList->clear();
-    }
 
     friend ostream &operator<< <T>(ostream &os, const List1D<T> &list);
 };
@@ -73,13 +70,7 @@ class List2D
     List1D<T> getRow(int rowIndex) const;
     string toString() const;
     
-    void clear(){
-        for (int i = 0; i< rows(); i++){
-            pMatrix->get(i)->clear();
-        }
-        pMatrix->clear();
-    }
-    
+     
     friend ostream &operator<< <T>(ostream &os, const List2D<T> &matrix);
 };
 
@@ -243,7 +234,7 @@ string List1D<T>::toString() const
 }
 
 template <typename T>
-ostream &operator<<(ostream &os, const List1D<T> &list)
+ostream &  operator<<(ostream &os, const List1D<T> &list)
 {
     // TODO
     os << list.toString();
@@ -442,7 +433,7 @@ List1D<string> InventoryManager::query(string attributeName, const double &minVa
     // TODO
     List1D<int> result = List1D<int>();
 
-    for (int i = 0; i < productNames.size(); i++){
+    for (int i = 0; i < size(); i++){
         if (quantities.get(i) < minQuantity) continue;
         List1D<InventoryAttribute> row = attributesMatrix.getRow(i);
         for (int j = 0; j < row.size(); j++){
@@ -517,8 +508,8 @@ void InventoryManager::removeDuplicates()
 {
     // TODO
 
-    for (int i = 0; i < productNames.size(); i++) {
-        for (int j = i + 1; j < productNames.size(); ) {
+    for (int i = 0; i < size(); i++) {
+        for (int j = i + 1; j < size(); ) {
             if (productNames.get(i) == productNames.get(j) && isSameAttribute(attributesMatrix.getRow(i), attributesMatrix.getRow(j))) {
                 quantities.set(i, quantities.get(i) + quantities.get(j));
 
@@ -540,7 +531,7 @@ InventoryManager InventoryManager::merge(const InventoryManager &inv1,
 
     InventoryManager newInven(inv1);
 
-    for (int i = 0; i < inv2.getProductNames().size(); i++) {
+    for (int i = 0; i < inv2.size(); i++) {
         newInven.addProduct(inv2.getProductAttributes(i),inv2.getProductName(i),inv2.getProductQuantity(i));    
     }
     
